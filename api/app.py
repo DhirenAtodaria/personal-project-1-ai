@@ -4,6 +4,7 @@ import torch
 import torch.nn as nn
 from torchvision import models
 import torchvision.transforms as transforms
+import json
 
 import wget
 import io
@@ -30,7 +31,18 @@ model.fc = nn.Sequential(
     nn.ReLU(inplace=True),
     nn.Linear(128, 101))
 
+<<<<<<< HEAD
 # checking for GPU or CPU
+=======
+if model_name not in os.listdir('./ml/models/'):
+    print(f'downloading the trained model {model_name}')
+    wget.download(
+        "https://github.com/DhirenAtodaria/personal-project-1-ai/releases/download/1.0.0/latestmodeldict.pth",
+        out=model_path
+    )
+
+#checking for GPU or CPU
+>>>>>>> 4a97a7539c2fb5169239bb2c618c9dfcb6dafc62
 trained_weights = torch.load(model_path, map_location='cpu')
 
 model.load_state_dict(trained_weights)
@@ -49,6 +61,7 @@ def transform_image(image_bytes):
     return my_transforms(image).unsqueeze(0)
 
 
+<<<<<<< HEAD
 class_names = ['apple_pie',
                'baby_back_ribs',
                'baklava',
@@ -150,13 +163,19 @@ class_names = ['apple_pie',
                'tiramisu',
                'tuna_tartare',
                'waffles']
+=======
+class_names = json.load(open('./classes.json'))
+>>>>>>> 4a97a7539c2fb5169239bb2c618c9dfcb6dafc62
 
 
 def get_prediction(image_bytes):
     tensor = transform_image(image_bytes=image_bytes)
     outputs = model.forward(tensor)
     _, y_hat = outputs.max(1)
-    return class_names[y_hat]
+    predicted_idx = str(y_hat.item())
+    return class_names[predicted_idx]
+
+print(class_names["0"])
 
 
 @app.route('/predict', methods=['POST'])
