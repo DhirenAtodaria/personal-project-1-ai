@@ -1,14 +1,9 @@
 import os
+
 import requests
-import time
-import datetime
-import pandas as pd
-from flask import request
 import dash
 import dash_core_components as dcc
-import dash_bootstrap_components as dbc
 import dash_html_components as html
-import dash_table
 from dash.dependencies import Input, Output, State
 import base64
 
@@ -19,7 +14,7 @@ external_stylesheets = [
 ]
 
 app = dash.Dash(
-    __name__, 
+    __name__,
     external_stylesheets=external_stylesheets,
     meta_tags=[
         {"name": "viewport", "content": "width=device-width, initial-scale=1"}
@@ -33,10 +28,10 @@ app.layout = html.Div([
     html.H1(children='Hello', style={'text-align': 'center'}),
     html.Div(children='''
         This is a web-app designed to accept food images and return a prediction on what the item is.
-    ''',  style={'text-align': 'center'}),
+    ''', style={'text-align': 'center'}),
     html.Div(children='''
         The app is created using Python Flask for the API framework, Dash for the front-end and a transfer-learning approach to training the model in PyTorch.
-    ''',  style={'text-align': 'center'}),
+    ''', style={'text-align': 'center'}),
     dcc.Upload(
         id='upload-image',
         children=html.Div([
@@ -57,22 +52,26 @@ app.layout = html.Div([
         # Allow multiple files to be uploaded
         multiple=False
     ),
-    html.Div(id='output-image-upload', style={'width': '50%', 'height':'50%'}),
-    html.Span(id='foodpred')
+    html.Div(id='output-image-upload', style={'width': '50%', 'height': '50%'}),
+    html.Span(id='foodpred'),
+    html.Div(id='calorieinfo', children="hello", style={'width': '200px', 'height': '200px', 'border': '2px solid black'})
 ])
+
+
+currentpred = None
 
 def parse_contents(contents):
     return html.Div(
         # HTML images accept base64 encoded strings in the same format
         # that is supplied by the upload
-        html.Img(src=contents, style={'width':'100%', 'height':'100%', 'object-fit': 'cover'})
+        html.Img(src=contents, style={'width': '100%', 'height': '100%', 'object-fit': 'cover'})
     )
+
 
 def parse_foodname(foodid):
     return html.Div(
         html.P(foodid)
     )
-
 
 
 @app.callback(Output('output-image-upload', 'children'),
@@ -82,17 +81,28 @@ def update_output(list_contents):
         children = parse_contents(list_contents)
         return children
 
+
 @app.callback(Output('foodpred', 'children'),
               [Input('upload-image', 'contents')])
-
 def food_predict(fooditem):
     if fooditem is not None:
         content_string = fooditem.split(',')
         bytesimage = base64.b64decode(content_string[1])
         response = requests.post("http://localhost:5000/predict", files={'file': bytesimage})
-        responsey = response.json()['food_name']
-        foodnamedic = parse_foodname(f'The AI predicts your food name is {responsey}')
+        prediction = response.json()['food_name']
+        foodnamedic = f'The AI predicts your food name is {prediction}'
         return foodnamedic
+
+
+@app.callback(Output('calorieinfo', 'children'),
+              [Input('foodpred', 'children')])
+def macro_retrival(predictname):
+    if predictname is not None:
+        foodname = predictname.split('is ')[1]
+        response = requests.post("http://localhost:5000/macros", data={'name': foodname})
+        # value = response.json()
+        return response.text
+
 
 
 
