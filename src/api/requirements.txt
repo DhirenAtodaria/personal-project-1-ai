@@ -1,2 +1,7 @@
+PIL
+wget
+torchvision
+torch
+flask
 certifi==2019.11.28
 wincertstore==0.2

@@ -1,21 +1,25 @@
-import sys
 import os
-import random
-from tqdm import tqdm
 
 from flask import Blueprint, request, jsonify, Flask
+from pymongo import MongoClient
 import torch
 import torch.nn as nn
-import torch.nn.functional as F
 from torchvision import models
 import torchvision.transforms as transforms
 import json
 
+import config
 import wget
 import io
 from PIL import Image
 
 app = Flask(__name__)
+
+# loading db
+client = MongoClient(config.MONGO_DB)
+db = client.get_database('FoodData')
+records = db.Macros
+
 
 # loading my model
 
@@ -64,19 +68,34 @@ def get_prediction(image_bytes):
     return class_names[predicted_idx]
 
 
-print(class_names["0"])
-
 
 @app.route('/predict', methods=['POST'])
 def predict_rating():
-    '''
+    """
     Endpoint to predict the image of the food
-    '''
+    """
     if request.method == 'POST':
         file = request.files['file']
         image_bytes = file.read()
         prediction_name = get_prediction(image_bytes=image_bytes)
         return jsonify({'food_name': prediction_name})
+
+
+# @app.route('/macros', methods=['GET'])
+#
+
+@app.route('/macros', methods=['POST'])
+def get_macros():
+    """
+    Get all the macro information
+    """
+
+    if request.method == 'POST':
+        query = request.form['name']
+        results = records.find_one({'name': query})
+        del results['_id']
+        print(results)
+        return jsonify(results)
 
 
 if __name__ == '__main__':

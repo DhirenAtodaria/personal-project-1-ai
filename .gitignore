@@ -1,0 +1,8 @@
+.vscode/
+__pycache__/
+ *.pyc
+.ipynb_checkpoints
+.DS_Store
+src/api/ml/models/*
+src/.idea/*
+!src/api/ml/models/.gitkeep
