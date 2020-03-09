@@ -1,6 +1,6 @@
 import os
 
-from flask import Blueprint, request, jsonify, Flask
+from flask import request, jsonify, Flask
 from pymongo import MongoClient
 import torch
 import torch.nn as nn
@@ -79,9 +79,6 @@ def predict_rating():
         prediction_name = get_prediction(image_bytes=image_bytes)
         return jsonify({'food_name': prediction_name})
 
-
-# @app.route('/macros', methods=['GET'])
-#
 
 @app.route('/macros', methods=['POST'])
 def get_macros():

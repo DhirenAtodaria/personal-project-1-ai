@@ -1,7 +1,6 @@
-import os
-
 import requests
 import dash
+import dash_table
 import dash_core_components as dcc
 import dash_html_components as html
 from dash.dependencies import Input, Output, State
@@ -25,13 +24,15 @@ app = dash.Dash(
 app.title = 'DA Food AI Project'
 
 app.layout = html.Div([
-    html.H1(children='Hello', style={'text-align': 'center'}),
-    html.Div(children='''
-        This is a web-app designed to accept food images and return a prediction on what the item is.
-    ''', style={'text-align': 'center'}),
-    html.Div(children='''
-        The app is created using Python Flask for the API framework, Dash for the front-end and a transfer-learning approach to training the model in PyTorch.
-    ''', style={'text-align': 'center'}),
+    html.Div(children=[
+        html.H1(children='Hello', style={'text-align': 'center'}),
+        html.Div(children='''
+            This is a web-app designed to accept food images and return a prediction on what the item is.
+        ''', style={'text-align': 'center'}),
+        html.Div(children='''
+            The app is created using Python Flask for the API framework, Dash for the front-end and a transfer-learning approach to training the model in PyTorch.
+        ''', style={'text-align': 'center', 'margin-bottom': '20px'})], style={'border-bottom': '1px solid black'}),
+
     dcc.Upload(
         id='upload-image',
         children=html.Div([
@@ -52,13 +53,16 @@ app.layout = html.Div([
         # Allow multiple files to be uploaded
         multiple=False
     ),
-    html.Div(id='output-image-upload', style={'width': '50%', 'height': '50%'}),
-    html.Span(id='foodpred'),
-    html.Div(id='calorieinfo', children="hello", style={'width': '200px', 'height': '200px', 'border': '2px solid black'})
+
+    html.Div(children=[
+        html.Div(children=[
+            html.Div(id='output-image-upload', style={'width': '20%'}),
+            html.Div(id='calorieinfo')
+        ], style={'width': '100vw', 'height': '30vh', 'display': 'flex', 'justify-content': 'space-around', 'align-items': 'center'}),
+        html.Span(id='foodpred')
+    ], style={'display': 'flex', 'flex-direction': 'column', 'justify-content': 'space-evenly', 'align-items': 'center', 'height': '50vh'})
 ])
 
-
-currentpred = None
 
 def parse_contents(contents):
     return html.Div(
@@ -68,9 +72,13 @@ def parse_contents(contents):
     )
 
 
-def parse_foodname(foodid):
-    return html.Div(
-        html.P(foodid)
+def parse_calorie_info(info):
+    return dash_table.DataTable(
+        id='table',
+        columns=[{"name": 'Calories (100g)', "id": 'Calories (100g)'}, {"name": 'Fats', "id": 'Fats'},
+                 {"name": 'Carbs', "id": 'Carbs'}, {"name": 'Protein', "id": 'Protein'}],
+        data=info,
+        style_cell={'textAlign': 'left', 'width': '150px'}
     )
 
 
@@ -100,10 +108,9 @@ def macro_retrival(predictname):
     if predictname is not None:
         foodname = predictname.split('is ')[1]
         response = requests.post("http://localhost:5000/macros", data={'name': foodname})
-        # value = response.json()
-        return response.text
-
-
+        value = response.json()
+        info = [value]
+        return parse_calorie_info(info)
 
 
 if __name__ == '__main__':
