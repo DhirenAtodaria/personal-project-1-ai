@@ -1,0 +1,22 @@
+version: '3.7'
+services:
+  api:
+    build:
+      context: src/api
+      dockerfile: Dockerfile
+    environment:
+      - ENVIRONMENT=prod
+    restart: always
+  dash:
+    build:
+      context: src/dash
+      dockerfile: Dockerfile
+    ports:
+      - "8050:8050"
+    environment:
+      - ENVIRONMENT=prod
+      - API_URL=http://api:5000
+    depends_on:
+      - api
+    restart: always
+

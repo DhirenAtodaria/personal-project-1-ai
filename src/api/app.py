@@ -6,12 +6,12 @@ import torch
 import torch.nn as nn
 from torchvision import models
 import torchvision.transforms as transforms
-import json
+from PIL import Image
 
+import json
 import config
 import wget
 import io
-from PIL import Image
 
 app = Flask(__name__)
 
@@ -95,4 +95,4 @@ def get_macros():
 
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=config.DEBUG, host=config.HOST)

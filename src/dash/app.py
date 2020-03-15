@@ -1,9 +1,13 @@
-import requests
+import os
+
 import dash
 import dash_table
 import dash_core_components as dcc
 import dash_html_components as html
-from dash.dependencies import Input, Output, State
+from dash.dependencies import Input, Output
+
+import config
+import requests
 import base64
 
 external_stylesheets = [
@@ -96,7 +100,7 @@ def food_predict(fooditem):
     if fooditem is not None:
         content_string = fooditem.split(',')
         bytesimage = base64.b64decode(content_string[1])
-        response = requests.post("http://localhost:5000/predict", files={'file': bytesimage})
+        response = requests.post(f"{config.API_URL}/predict", files={'file': bytesimage})
         prediction = response.json()['food_name']
         foodnamedic = f'The AI predicts your food name is {prediction}'
         return foodnamedic
@@ -107,11 +111,11 @@ def food_predict(fooditem):
 def macro_retrival(predictname):
     if predictname is not None:
         foodname = predictname.split('is ')[1]
-        response = requests.post("http://localhost:5000/macros", data={'name': foodname})
+        response = requests.post(f"{config.API_URL}/macros", data={'name': foodname})
         value = response.json()
         info = [value]
         return parse_calorie_info(info)
 
 
 if __name__ == '__main__':
-    app.run_server(debug=True)
+    app.run_server(debug=config.DEBUG, host=config.HOST)
