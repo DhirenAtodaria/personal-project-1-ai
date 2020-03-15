@@ -5,3 +5,4 @@ __pycache__/
 .DS_Store
 src/api/ml/models/*
 !src/api/ml/models/.gitkeep
+.idea/
