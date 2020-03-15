@@ -26,9 +26,3 @@ The second step was to create the backend API used to take the requests. The API
 /src/api/
 
 Once the information is received it is sent to a Plotly Dash frontend, which is a data analytics framework based on React to create powerful visuals in Python. The code can be found in /src/dash/
-
-## Acknowledgments
-
-* Hat tip to anyone whose code was used
-* Inspiration
-* etc
