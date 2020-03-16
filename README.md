@@ -1,4 +1,4 @@
-# AI - Food image classification App
+# AI - Food Image Classification App
 
 This project is a food image classification web app. It allows the user to upload an image of a specific food item. Upon doing so, the image is then fed to an AI model and the prediction is returned along with certain information which is contained in a database.The project captures the power of image classification with PyTorch and connects to a backend API made using Flask alongside PlotLy Dash as the front end. The app is fully dockerized and deployed on AWS.
 
