@@ -6,3 +6,4 @@ __pycache__/
 src/api/ml/models/*
 src/.idea/*
 !src/api/ml/models/.gitkeep
+.idea/
