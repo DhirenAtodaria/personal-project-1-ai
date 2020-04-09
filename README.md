@@ -6,6 +6,7 @@ This project is a food image classification web app. It allows the user to uploa
 
 Visit: ... To check out the app.
 
+To use: Upload an image of any food items, the app will automatically predict what food item it is, and subsequently show the corresponding nutritional information for the app.
 
 
 ## Deployment
